@@ -2,8 +2,9 @@ apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   annotations:
-    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/instance: llm-policy-monitor
     app.kubernetes.io/name: llm-policy-monitor
