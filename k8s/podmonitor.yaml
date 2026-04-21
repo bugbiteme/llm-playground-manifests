@@ -1,6 +1,8 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   name: istio-proxies-monitor
   namespace: llm-playground
 spec:
