@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  annotations:
+    chains.tekton.dev/signed: "true"
+  labels:
+    app.kubernetes.io/instance: llm-playground
+    app.kubernetes.io/name: llm-playground
+    operator.tekton.dev/operand-name: openshift-pipelines-addons
+    pipeline.openshift.io/strategy: docker
+    pipeline.openshift.io/type: kubernetes
+    tekton.dev/pipeline: llm-playground
+  name: llm-playground
+  namespace: llm-playground
+spec:
+  params:
+  - name: APP_NAME
+    value: llm-playground
+  - name: GIT_REPO
+    value: https://github.com/bugbiteme/llm-playground.git
+  - name: GIT_REVISION
+    value: ""
+  - name: IMAGE_NAME
+    value: image-registry.openshift-image-registry.svc:5000/llm-playground/llm-playground
+  - name: PATH_CONTEXT
+    value: .
+  pipelineRef:
+    name: llm-playground
+  taskRunTemplate:
+    serviceAccountName: pipeline
+  timeouts:
+    pipeline: 1h0m0s
+  workspaces:
+  - name: workspace
+    volumeClaimTemplate:
+      metadata:
+        creationTimestamp: null
+        labels:
+          tekton.dev/pipeline: llm-playground
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

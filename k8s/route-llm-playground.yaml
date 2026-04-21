@@ -1,0 +1,22 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: llm-playground
+    app.kubernetes.io/component: llm-playground
+    app.kubernetes.io/instance: llm-playground
+    app.kubernetes.io/name: llm-playground
+    app.kubernetes.io/part-of: llm-playground
+  name: llm-playground
+  namespace: llm-playground
+spec:
+  port:
+    targetPort: 8080-tcp
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: llm-playground
+    weight: 100
+  wildcardPolicy: None
