@@ -13,3 +13,19 @@ subjects:
   - kind: ServiceAccount
     name: openshift-gitops-argocd-application-controller
     namespace: openshift-gitops
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: openshift-gitops-argocd-monitoring-edit
+  namespace: llm-playground
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: monitoring-edit
+subjects:
+  - kind: ServiceAccount
+    name: openshift-gitops-argocd-application-controller
+    namespace: openshift-gitops
