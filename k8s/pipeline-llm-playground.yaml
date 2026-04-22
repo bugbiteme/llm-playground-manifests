@@ -76,7 +76,7 @@ spec:
   - name: deploy
     params:
     - name: SCRIPT
-      value: oc rollout status deploy/$(params.APP_NAME)
+      value: oc set image deployment/$(params.APP_NAME) $(params.APP_NAME)=$(params.IMAGE_NAME)@$(tasks.build.results.IMAGE_DIGEST) && oc rollout status deployment/$(params.APP_NAME)
     runAfter:
     - build
     taskRef:
