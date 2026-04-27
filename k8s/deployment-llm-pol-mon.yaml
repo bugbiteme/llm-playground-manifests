@@ -39,6 +39,7 @@ spec:
           protocol: TCP
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
+      serviceAccountName: limitador-monitor
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
