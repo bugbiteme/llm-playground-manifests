@@ -13,7 +13,7 @@ rules:
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: ["get"]
-  resourceNames: ["limitador-config"]  # scope to just this configmap
+  resourceNames: ["limitador-limits-config-limitador"]  # scope to just this configmap
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
