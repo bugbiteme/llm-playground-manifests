@@ -12,3 +12,4 @@ resources:
   - deployment-llm-playground.yaml
   - deployment-llm-pol-mon.yaml
   - route-llm-playground.yaml
+  - rbac-llm-pol-mon.yaml
