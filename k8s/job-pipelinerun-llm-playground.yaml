@@ -17,7 +17,7 @@ spec:
         - /bin/sh
         - -c
         - |
-          kubectl apply -f - <<'EOF'
+          kubectl create -f - <<'EOF'
           apiVersion: tekton.dev/v1
           kind: PipelineRun
           metadata:
