@@ -1,0 +1,72 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "5"
+  name: job-pipelinerun-llm-playground
+  namespace: llm-playground
+spec:
+  template:
+    spec:
+      containers:
+      - name: kubectl
+        image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          kubectl apply -f - <<'EOF'
+          apiVersion: tekton.dev/v1
+          kind: PipelineRun
+          metadata:
+            annotations:
+              argocd.argoproj.io/hook: Sync
+              argocd.argoproj.io/hook-delete-policy: HookSucceeded
+              argocd.argoproj.io/sync-wave: "2"
+              chains.tekton.dev/signed: "true"
+            labels:
+              app.kubernetes.io/instance: llm-playground
+              app.kubernetes.io/name: llm-playground
+              operator.tekton.dev/operand-name: openshift-pipelines-addons
+              pipeline.openshift.io/strategy: docker
+              pipeline.openshift.io/type: kubernetes
+              tekton.dev/pipeline: llm-playground
+            name: llm-playground
+            namespace: llm-playground
+          spec:
+            params:
+            - name: APP_NAME
+              value: llm-playground
+            - name: GIT_REPO
+              value: https://github.com/bugbiteme/llm-playground.git
+            - name: GIT_REVISION
+              value: ""
+            - name: IMAGE_NAME
+              value: image-registry.openshift-image-registry.svc:5000/llm-playground/llm-playground
+            - name: PATH_CONTEXT
+              value: .
+            pipelineRef:
+              name: llm-playground
+            taskRunTemplate:
+              serviceAccountName: pipeline
+            timeouts:
+              pipeline: 1h0m0s
+            workspaces:
+            - name: workspace
+              volumeClaimTemplate:
+                metadata:
+                  creationTimestamp: null
+                  labels:
+                    tekton.dev/pipeline: llm-playground
+                spec:
+                  accessModes:
+                  - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 1Gi
+          EOF
+      restartPolicy: Never
+      serviceAccountName: pipeline
+  backoffLimit: 2

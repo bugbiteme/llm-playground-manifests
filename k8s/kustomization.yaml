@@ -13,3 +13,5 @@ resources:
   - deployment-llm-pol-mon.yaml
   - route-llm-playground.yaml
   - rbac-llm-pol-mon.yaml
+  - job-pipelinerun-llm-polmon.yaml
+  - job-pipelinerun-llm-playground.yaml

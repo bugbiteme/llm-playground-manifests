@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "5"
+  name: job-pipelinerun-llm-polmon
+  namespace: llm-playground
+spec:
+  template:
+    spec:
+      containers:
+      - name: kubectl
+        image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          kubectl apply -f - <<'EOF'
+          apiVersion: tekton.dev/v1
+          kind: PipelineRun
+          metadata:
+            annotations:
+              argocd.argoproj.io/hook: Sync
+              argocd.argoproj.io/hook-delete-policy: HookSucceeded
+              argocd.argoproj.io/sync-wave: "2"
+            labels:
+              app.kubernetes.io/instance: llm-policy-monitor
+              app.kubernetes.io/name: llm-policy-monitor
+              operator.tekton.dev/operand-name: openshift-pipelines-addons
+              pipeline.openshift.io/runtime: python
+              pipeline.openshift.io/runtime-version: 3.12-minimal-ubi10
+              pipeline.openshift.io/type: kubernetes
+              tekton.dev/pipeline: llm-policy-monitor
+            generateName: llm-policy-monitor-
+            namespace: llm-playground
+          spec:
+            params:
+            - name: APP_NAME
+              value: llm-policy-monitor
+            - name: GIT_REPO
+              value: https://github.com/bugbiteme/llm-policy-monitor.git
+            - name: GIT_REVISION
+              value: ""
+            - name: IMAGE_NAME
+              value: image-registry.openshift-image-registry.svc:5000/llm-playground/llm-policy-monitor
+            - name: PATH_CONTEXT
+              value: .
+            - name: VERSION
+              value: 3.12-minimal-ubi10
+            pipelineRef:
+              name: llm-policy-monitor
+            taskRunTemplate:
+              serviceAccountName: pipeline
+            timeouts:
+              pipeline: 1h0m0s
+            workspaces:
+            - name: workspace
+              volumeClaimTemplate:
+                metadata:
+                  creationTimestamp: null
+                  labels:
+                    tekton.dev/pipeline: llm-policy-monitor
+                spec:
+                  accessModes:
+                  - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 1Gi
+          EOF
+      restartPolicy: Never
+      serviceAccountName: pipeline
+  backoffLimit: 2
