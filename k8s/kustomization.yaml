@@ -15,4 +15,4 @@ resources:
   - rbac-llm-pol-mon.yaml
   - job-pipelinerun-llm-polmon.yaml
   - job-pipelinerun-llm-playground.yaml
-  - catalog-info.yaml
+  # - catalog-info.yaml
